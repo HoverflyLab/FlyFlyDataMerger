@@ -1,6 +1,5 @@
 Need to:
 
 - Add option to toggle viewing off or on depending on user choice (Found in labchart 2 datamerger)
-- Add in blockers and greyed out buttons to prevent people doing things in wrong order
 - Check where we do our time guesstimation in "import convert combine"
   as I've seen examples of doing at the start or the end
