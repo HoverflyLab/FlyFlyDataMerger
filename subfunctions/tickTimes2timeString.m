@@ -1,14 +1,14 @@
-
-function x = tickTimes2timeString(fileName)
-
-load(fileName);
+function x = tickTimes2timeString(fileName) %#ok<INUSD> Used in an eval statement
+% Inform the user of warning message
+disp("A warning will come up as part of this script, please ignore it as it's intentional")
 
 % Make an array with the starting times of all blocks
 n = 1;
 while true
     try
-        fileName = ['ticktimes_block' num2str(n) '(1,1)'];
-        x(n) = eval(fileName);
+        eval(['load(fileName, "ticktimes_block' num2str(n) '");']);
+        timeBlock = ['ticktimes_block' num2str(n)];
+        x(n) = eval(timeBlock);
     catch
         break;
     end

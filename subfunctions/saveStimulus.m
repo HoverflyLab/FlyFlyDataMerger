@@ -13,7 +13,17 @@ function fileName = saveStimulus(path, fileName, DataBlock, Units, parameterFile
 
 load(parameterFile);
 
-t = datetime(timeStartPrecision);
+% Correct for differences in capitalisation
+if exist('stimulus', 'var')
+    Stimulus = stimulus;
+    clear stimulus
+end
+
+try 
+    t = datetime(timeStartPrecision);
+catch
+    t = datetime(timeStart, 'Format','d-MMM-y HH_mm_ss');
+end
 fileName = [datestr(t, 'yyyy-mm-dd@hh_MM_ss') '-' fileName];
 
 %loads:

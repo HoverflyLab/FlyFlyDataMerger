@@ -21,7 +21,7 @@ for n = 3:N % First two files are "." and "..", ignore them
     if strcmp(fileName(end-3:end), '.mat')
         
         dateString = fileName(end-23:end-4); % experimentName-dd-mmm-yyyy HH_MM_SS.mat
-        %                                   -> fileName(end-23:end-4) = dd-mmm-yyyy HH_MM_SS;
+                                             % -> fileName(end-23:end-4) = dd-mmm-yyyy HH_MM_SS;
         
         dateString = regexprep(dateString, '_', ':'); %switch to normal format
         fileDate   = dateString(1:11); %pick out date
@@ -32,9 +32,18 @@ for n = 3:N % First two files are "." and "..", ignore them
     end
     
     if ok %just use parameters from same day
-        
-        load([directory fileName]);
-        numLayers = length(Stimulus.layers); %number layers used
+        % We don't know capitalisation of some files so we get matlab to
+        % temporarily shut up
+        warning('off')
+        load([directory fileName], 'debugData', 'timeStartPrecision', 'Stimulus', 'stimulus');
+        warning('on')
+
+        if exist('stimulus', 'var') 
+            Stimulus = stimulus;
+            clear stimulus
+        end
+
+        numLayers = length(Stimulus.layers); % Number layers used
         numRuns   = length(debugData.trialSubset);
         %numRuns   = length(skippedInTrial);  %numer of trials
         
@@ -60,7 +69,20 @@ for n = 3:N % First two files are "." and "..", ignore them
         T.maxStimDuration  = max(T.stimDuration,[],1);
         
         if exist('timeStartPrecision', 'var') %check if variable exist
-            trialTime = datenum(timeStartPrecision);
+            % Determine what kind of date string we're using
+            if ischar(timeStartPrecision) || isstring(timeStartPrecision)
+                % Attempt to grab correct time format
+                try
+                    trialTime = datetime(timeStartPrecision, 'Format', 'd-MMM-y HH:mm:ss:SSS');
+                catch
+                    timeStartPrecision = [fileDate ' ' convertStringsToChars(timeStartPrecision)];
+                    trialTime = datetime(timeStartPrecision, 'Format', 'd-MMM-y HH:mm:ss:SSS');
+                end
+                trialTime = datenum(trialTime);
+            else
+                % Use old method and function
+                trialTime = datenum(timeStartPrecision);
+            end
         else
             trialTime = datenum(dateString); %time of first trial
         end
